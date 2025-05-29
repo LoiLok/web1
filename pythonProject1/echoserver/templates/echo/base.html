@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список книг</title>
+    <style>
+        .pagination { margin-top: 20px; }
+        .pagination a { padding: 5px 10px; margin: 0 5px; }
+        .current { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Все книги</h1>
+    <a href="{% url 'book_create' %}">Добавить книгу</a>
+    <ul>
+        {% for book in page_obj %}
+            <li>
+                {{ book.title }} ({{ book.author }}) - {{ book.price }} руб.
+                <a href="{% url 'book_update' book.id %}">Редактировать</a>
+                <a href="{% url 'book_delete' book.id %}">Удалить</a>
+            </li>
+        {% empty %}
+            <li>Книг нет.</li>
+        {% endfor %}
+    </ul>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}">1</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}">&lt;&minus;&minus;</a>
+            {% endif %}
+
+            <span class="current">
+                Страница {{ page_obj.number }} из {{ paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}">&minus;&minus;&gt;</a>
+                <a href="?page={{ paginator.num_pages }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}">{{paginator.num_pages}}</a>
+            {% endif %}
+        </span>
+    </div>
+     <form method="get" style="margin-bottom: 20px;">
+        <label>Элементов на странице:
+            <select name="per_page" onchange="this.form.submit()">
+                <option value="5" {% if request.GET.per_page == '5' or not request.GET.per_page %}selected{% endif %}>5</option>
+                <option value="10" {% if request.GET.per_page == '10' %}selected{% endif %}>10</option>
+                <option value="20" {% if request.GET.per_page == '20' %}selected{% endif %}>20</option>
+                <option value="50" {% if request.GET.per_page == '50' %}selected{% endif %}>50</option>
+            </select>
+        </label>
+    </form>
+</body>
+</html>
